@@ -1,3 +1,5 @@
+server:
+  port: 8888
 cors:
   originPatterns: "http://localhost:8080,http://localhost:3000,https://erudio.com.br"
 security:
@@ -8,9 +10,6 @@ security:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/rest-spring-boot?useTimezone=true&serverTimezone=UTC
-    username: postgres
-    password: root
   jpa:
     open-in-view: true
     hibernate:
