@@ -50,9 +50,9 @@ public class BookServices {
 
     public BookVO findById(Long id) {
         logger.info("Finding one book");
-        BookVO vo = repo.findById(id)
-                .map(book -> mapper.map(book, BookVO.class))
+        var book = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with ID: " + id));
+        var vo = mapper.map(book, BookVO.class);
         try {
             vo.add(linkTo(methodOn(BookController.class).findById(id)).withSelfRel());
         } catch (Exception e) {
@@ -76,16 +76,15 @@ public class BookServices {
     public BookVO put(BookVO bookVO) {
         logger.info("Updating one book");
 
-        BookVO vo = repo.findById(bookVO.getKey())
-                .map(book -> {
-                    book.setAuthor(bookVO.getAuthor());
-                    book.setLaunchDate(bookVO.getLaunchDate());
-                    book.setPrice(bookVO.getPrice());
-                    book.setTitle(bookVO.getTitle());
+        var book = repo.findById(bookVO.getKey())
+        		.orElseThrow(() -> new ResourceNotFoundException("Book not found with ID: " + bookVO.getKey()));
+        book.setAuthor(bookVO.getAuthor());
+        book.setLaunchDate(bookVO.getLaunchDate());
+        book.setPrice(bookVO.getPrice());
+        book.setTitle(bookVO.getTitle());
+        
+        var vo = mapper.map(repo.save(book), BookVO.class);
 
-                    return mapper.map(repo.save(book), BookVO.class);
-                })
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found with ID: " + bookVO.getKey()));
         try {
             vo.add(linkTo(methodOn(BookController.class).findById(vo.getKey())).withSelfRel());
         } catch (Exception e) {

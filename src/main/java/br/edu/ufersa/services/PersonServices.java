@@ -51,9 +51,9 @@ public class PersonServices {
 
     public PersonVO findById(Long id) {
         logger.info("Finding one person");
-        PersonVO vo = repo.findById(id)
-                .map(person -> mapper.map(person, PersonVO.class))
-                .orElseThrow(() -> new ResourceNotFoundException("Person not found with ID: " + id));
+        var person = repo.findById(id)
+        		.orElseThrow(() -> new ResourceNotFoundException("Person not found with ID: " + id));
+        var vo = mapper.map(person, PersonVO.class);
        try {
 		vo.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
 	} catch (Exception e) {
@@ -71,29 +71,29 @@ public class PersonServices {
     	} catch (Exception e) {
     		e.printStackTrace();
     	}
-           return vo;
+       return vo;
     }
 
     public PersonVO put(PersonVO personVO) {
         logger.info("Updating one person");
 
-        PersonVO vo = repo.findById(personVO.getKey())
-                .map(person -> {
-                    person.setFirstName(personVO.getFirstName());
-                    person.setLastName(personVO.getLastName());
-                    person.setAddress(personVO.getAddress());
-                    person.setGender(personVO.getGender());
+        var person = repo.findById(personVO.getKey())
+        		.orElseThrow(() -> new ResourceNotFoundException("Person not found with ID: " + personVO.getKey()));
+        person.setFirstName(personVO.getFirstName());
+        person.setLastName(personVO.getLastName());
+        person.setAddress(personVO.getAddress());
+        person.setGender(personVO.getGender());
 
-                    return mapper.map(repo.save(person), PersonVO.class);
-                })
-                .orElseThrow(() -> new ResourceNotFoundException("Person not found with ID: " + personVO.getKey()));
+        var vo = mapper.map(repo.save(person), PersonVO.class);
+        
         try {
-    		vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    	}
-           return vo;
+			vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return vo;
     }
+
 
 
     public void delete(Long id) {
